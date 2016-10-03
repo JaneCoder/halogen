@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
     PulseLoader: require('./PulseLoader'),
     RotateLoader: require('./RotateLoader'),

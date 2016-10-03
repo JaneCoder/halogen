@@ -1,3 +1,5 @@
+'use strict';
+
 var React = require('react');
 var assign = require('domkit/appendVendorPrefix');
 var insertKeyframesRule = require('domkit/insertKeyframesRule');
@@ -17,6 +19,8 @@ var keyframes = {
 var animationName = insertKeyframesRule(keyframes);
 
 var Loader = React.createClass({
+    displayName: 'Loader',
+
     /**
      * @type {Object}
      */
@@ -30,7 +34,7 @@ var Loader = React.createClass({
     /**
      * @return {Object}
      */
-    getDefaultProps: function() {
+    getDefaultProps: function getDefaultProps() {
         return {
             loading: true,
             color: '#ffffff',
@@ -42,7 +46,7 @@ var Loader = React.createClass({
      * @param  {String} size
      * @return {Object}
      */
-    getBallStyle: function(size) {
+    getBallStyle: function getBallStyle(size) {
         return {
             width: size,
             height: size,
@@ -55,7 +59,7 @@ var Loader = React.createClass({
      * @param  {Number} i
      * @return {Object}
      */
-    getAnimationStyle: function(i) {
+    getAnimationStyle: function getAnimationStyle(i) {
         var animation = [animationName, '0.6s', '0s', 'infinite', 'linear'].join(' ');
         var animationFillMode = 'forwards';
 
@@ -69,38 +73,26 @@ var Loader = React.createClass({
      * @param  {Number} i
      * @return {Object}
      */
-    getStyle: function(i) {
+    getStyle: function getStyle(i) {
         var size = parseInt(this.props.size);
-        var moonSize = size/7;
+        var moonSize = size / 7;
 
         if (i == 1) {
-            return assign(
-                this.getBallStyle(moonSize),
-                this.getAnimationStyle(i),
-                {
-                    backgroundColor: this.props.color,
-                    opacity: '0.8',
-                    position: 'absolute',
-                    top: size/2 - moonSize/2
-                }
-            );
-        }
-        else if (i == 2) {
-            return assign(
-                this.getBallStyle(size),
-                {
-                    border: moonSize +'px solid ' + this.props.color,
-                    opacity: 0.1
-                }
-            );
-        }
-        else {
-            return assign(
-                this.getAnimationStyle(i),
-                {
-                    position: 'relative'
-                }
-            );
+            return assign(this.getBallStyle(moonSize), this.getAnimationStyle(i), {
+                backgroundColor: this.props.color,
+                opacity: '0.8',
+                position: 'absolute',
+                top: size / 2 - moonSize / 2
+            });
+        } else if (i == 2) {
+            return assign(this.getBallStyle(size), {
+                border: moonSize + 'px solid ' + this.props.color,
+                opacity: 0.1
+            });
+        } else {
+            return assign(this.getAnimationStyle(i), {
+                position: 'relative'
+            });
         }
     },
 
@@ -108,22 +100,24 @@ var Loader = React.createClass({
      * @param  {Boolean} loading
      * @return {ReactComponent || null}
      */
-    renderLoader: function(loading) {
+    renderLoader: function renderLoader(loading) {
         if (loading) {
-            return (
-                <div id={this.props.id} className={this.props.className}>
-                    <div style={this.getStyle(0)}>
-                        <div style={this.getStyle(1)}></div>
-                        <div style={this.getStyle(2)}></div>
-                    </div>
-                </div>
+            return React.createElement(
+                'div',
+                { id: this.props.id, className: this.props.className },
+                React.createElement(
+                    'div',
+                    { style: this.getStyle(0) },
+                    React.createElement('div', { style: this.getStyle(1) }),
+                    React.createElement('div', { style: this.getStyle(2) })
+                )
             );
         }
 
         return null;
     },
 
-    render: function() {
+    render: function render() {
         return this.renderLoader(this.props.loading);
     }
 });

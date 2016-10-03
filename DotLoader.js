@@ -1,3 +1,5 @@
+'use strict';
+
 var React = require('react');
 var assign = require('domkit/appendVendorPrefix');
 var insertKeyframesRule = require('domkit/insertKeyframesRule');
@@ -34,6 +36,8 @@ var rotateAnimationName = insertKeyframesRule(rotateKeyframes);
 var bounceAnimationName = insertKeyframesRule(bounceKeyframes);
 
 var Loader = React.createClass({
+    displayName: 'Loader',
+
     /**
      * @type {Object}
      */
@@ -47,7 +51,7 @@ var Loader = React.createClass({
     /**
      * @return {Object}
      */
-    getDefaultProps: function() {
+    getDefaultProps: function getDefaultProps() {
         return {
             loading: true,
             color: '#ffffff',
@@ -59,7 +63,7 @@ var Loader = React.createClass({
      * @param  {String} size
      * @return {Object}
      */
-    getBallStyle: function(size) {
+    getBallStyle: function getBallStyle(size) {
         return {
             backgroundColor: this.props.color,
             width: size,
@@ -73,8 +77,8 @@ var Loader = React.createClass({
      * @param  {Number} i
      * @return {Object}
      */
-    getAnimationStyle: function(i) {
-        var animation = [i==0 ? rotateAnimationName : bounceAnimationName, '2s', i==2? '-1s': '0s', 'infinite', 'linear'].join(' ');
+    getAnimationStyle: function getAnimationStyle(i) {
+        var animation = [i == 0 ? rotateAnimationName : bounceAnimationName, '2s', i == 2 ? '-1s' : '0s', 'infinite', 'linear'].join(' ');
         var animationFillMode = 'forwards';
 
         return {
@@ -87,52 +91,47 @@ var Loader = React.createClass({
      * @param  {Number} i
      * @return {Object}
      */
-    getStyle: function(i) {
+    getStyle: function getStyle(i) {
         var size = parseInt(this.props.size);
-        var ballSize = size/2;
+        var ballSize = size / 2;
 
         if (i) {
-            return assign(
-                this.getBallStyle(ballSize),
-                this.getAnimationStyle(i),
-                {
-                    position: 'absolute',
-                    top: i%2? 0: 'auto',
-                    bottom: i%2? 'auto': 0
-                }
-            );
+            return assign(this.getBallStyle(ballSize), this.getAnimationStyle(i), {
+                position: 'absolute',
+                top: i % 2 ? 0 : 'auto',
+                bottom: i % 2 ? 'auto' : 0
+            });
         }
 
-        return assign(
-            this.getAnimationStyle(i),
-            {
-                width: size,
-                height: size,
-                position: 'relative'
-            }
-        );
+        return assign(this.getAnimationStyle(i), {
+            width: size,
+            height: size,
+            position: 'relative'
+        });
     },
 
     /**
      * @param  {Boolean} loading
      * @return {ReactComponent || null}
      */
-    renderLoader: function(loading) {
+    renderLoader: function renderLoader(loading) {
         if (loading) {
-            return (
-                <div id={this.props.id} className={this.props.className}>
-                    <div style={this.getStyle(0)}>
-                        <div style={this.getStyle(1)}></div>
-                        <div style={this.getStyle(2)}></div>
-                    </div>
-                </div>
+            return React.createElement(
+                'div',
+                { id: this.props.id, className: this.props.className },
+                React.createElement(
+                    'div',
+                    { style: this.getStyle(0) },
+                    React.createElement('div', { style: this.getStyle(1) }),
+                    React.createElement('div', { style: this.getStyle(2) })
+                )
             );
         }
 
         return null;
     },
 
-    render: function() {
+    render: function render() {
         return this.renderLoader(this.props.loading);
     }
 });

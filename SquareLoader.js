@@ -1,3 +1,5 @@
+'use strict';
+
 var React = require('react');
 var assign = require('domkit/appendVendorPrefix');
 var insertKeyframesRule = require('domkit/insertKeyframesRule');
@@ -7,16 +9,16 @@ var insertKeyframesRule = require('domkit/insertKeyframesRule');
  */
 var keyframes = {
     '25%': {
-        transform: 'perspective(100px) rotateX(180deg) rotateY(0)'
+        transform: 'rotateX(180deg) rotateY(0)'
     },
     '50%': {
-        transform: 'perspective(100px) rotateX(180deg) rotateY(180deg)'
+        transform: 'rotateX(180deg) rotateY(180deg)'
     },
     '75%': {
-        transform: 'perspective(100px) rotateX(0) rotateY(180deg)'
+        transform: 'rotateX(0) rotateY(180deg)'
     },
     '100%': {
-        transform: 'perspective(100px) rotateX(0) rotateY(0)'
+        transform: 'rotateX(0) rotateY(0)'
     }
 };
 
@@ -26,36 +28,37 @@ var keyframes = {
 var animationName = insertKeyframesRule(keyframes);
 
 var Loader = React.createClass({
+    displayName: 'Loader',
+
     /**
      * @type {Object}
      */
     propTypes: {
         loading: React.PropTypes.bool,
         color: React.PropTypes.string,
-        size: React.PropTypes.string
+        size: React.PropTypes.string,
+        margin: React.PropTypes.string
     },
 
     /**
      * @return {Object}
      */
-    getDefaultProps: function() {
+    getDefaultProps: function getDefaultProps() {
         return {
             loading: true,
             color: '#ffffff',
-            size: '20px'
+            size: '50px'
         };
     },
 
     /**
      * @return {Object}
      */
-    getSharpStyle: function() {
+    getSquareStyle: function getSquareStyle() {
         return {
-            width: 0,
-            height: 0,
-            borderLeft: this.props.size + ' solid transparent',
-            borderRight: this.props.size + ' solid transparent',
-            borderBottom: this.props.size + ' solid '+ this.props.color,
+            backgroundColor: this.props.color,
+            width: this.props.size,
+            height: this.props.size,
             verticalAlign: this.props.verticalAlign
         };
     },
@@ -64,11 +67,13 @@ var Loader = React.createClass({
      * @param  {Number} i
      * @return {Object}
      */
-    getAnimationStyle: function(i) {
+    getAnimationStyle: function getAnimationStyle(i) {
         var animation = [animationName, '3s', '0s', 'infinite', 'cubic-bezier(.09,.57,.49,.9)'].join(' ');
         var animationFillMode = 'both';
+        var perspective = '100px';
 
         return {
+            perspective: perspective,
             animation: animation,
             animationFillMode: animationFillMode
         };
@@ -78,33 +83,29 @@ var Loader = React.createClass({
      * @param  {Number} i
      * @return {Object}
      */
-    getStyle: function(i) {
-        return assign(
-            this.getSharpStyle(i),
-            this.getAnimationStyle(i),
-            {
-                display: 'inline-block'
-            }
-        );
+    getStyle: function getStyle(i) {
+        return assign(this.getSquareStyle(i), this.getAnimationStyle(i), {
+            display: 'inline-block'
+        });
     },
 
     /**
      * @param  {Boolean} loading
      * @return {ReactComponent || null}
      */
-    renderLoader: function(loading) {
+    renderLoader: function renderLoader(loading) {
         if (loading) {
-            return (
-                <div id={this.props.id} className={this.props.className}>
-                    <div style={this.getStyle()}></div>
-                </div>
+            return React.createElement(
+                'div',
+                { id: this.props.id, className: this.props.className },
+                React.createElement('div', { style: this.getStyle() })
             );
-        };
+        }
 
         return null;
     },
 
-    render: function() {
+    render: function render() {
         return this.renderLoader(this.props.loading);
     }
 });
